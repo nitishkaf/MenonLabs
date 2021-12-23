@@ -1,2 +1,1 @@
-# CommonLit
-Menon Labs
+# Menon Labs: CommonLit Mobile Application
