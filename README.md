@@ -19,7 +19,7 @@ git add .
 git commit -m "whatever text"
 git push
 
-//create new branch
+//create new branch\
 git branch
 git checkout -b "110820Branch" //creates new branch and switches to that branch
 git push --set-upstream origin 110820Branch
