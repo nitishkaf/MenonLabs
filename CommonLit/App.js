@@ -159,12 +159,6 @@ import { WebView } from 'react-native-webview';
     titleText: {
       fontSize: 20,
       fontWeight: "bold"
-    },
-    container: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      backgroundColor: "#e5e5e5",
     }
   });
 
