@@ -1,23 +1,36 @@
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Button, FlatList, StatusBar, Text, View, StyleSheet, TouchableOpacity } from 'react-native';
-import Header from './components/Header';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React, { useEffect, useState, Component } from 'react';
+import { 
+	ActivityIndicator, 
+	Alert, 
+	Button, 
+	FlatList, 
+	StatusBar, 
+	Text, 
+	View, 
+	StyleSheet, 
+	TouchableOpacity 
+ } from 'react-native';
+ import Header from './components/Header';
+ import { NavigationContainer } from '@react-navigation/native';
+ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-export default App = () => {
-  const [isLoading, setLoading] = useState(true);
-  const [data, setData] = useState([]);
+ export default App = () => {
+  const [isLibraryLoading, setLibraryLoading] = useState(true);
+  const [libraryData, setLibraryData] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
+  const [selectedTitle, setSelectedTitle] = useState(null);
+  const Stack = createNativeStackNavigator();
 
-  const getTexts = async () => {
+  const getLibrary = async () => {
      try {
-      const response = await fetch('https://www.commonlit.org/api/v1/raw_content/lesson_templates?token=9759826c246d687a67328c4c81811bb108821e41af3c42ce41e6ff28ebf8bbba9737947232dd64e32df99a54a0add95c498001d917ca96258d50444af256a2dc');
+      const token = '9759826c246d687a67328c4c81811bb108821e41af3c42ce41e6ff28ebf8bbba9737947232dd64e32df99a54a0add95c498001d917ca96258d50444af256a2dc';
+      const response = await fetch('https://www.commonlit.org/api/v1/raw_content/lesson_templates?token='+token);
       const json = await response.json();
-      setData(json);
+      setLibraryData(json);
     } catch (error) {
       console.error(error);
     } finally {
-      setLoading(false);
+      setLibraryLoading(false);
     }
   }
 
@@ -27,24 +40,86 @@ export default App = () => {
     </TouchableOpacity>
   );
 
-  const renderItem = ({ item }) => {
+  const renderLibrary = ({ item }) => {
     const backgroundColor = item.id === selectedId ? "#6e3b6e" : "#f9c2ff";
     const color = item.id === selectedId ? 'white' : 'black';
 
     return (
       <Item
         item={item}
-        onPress={() => setSelectedId(item.id)}
+        onPress={() => {
+          setSelectedId(item.id)
+          setSelectedTitle(item.name)
+        }}
         backgroundColor={{ backgroundColor }}
         textColor={{ color }}
       />
     );
   };
 
-  useEffect(() => {
-    getTexts();
-  }, []);
-  
+  function HomeScreen({ navigation }) {
+    return (
+      <View style={{ flex: 1, padding: 24 }}>
+      <Header title="CommonLit" />
+      <Button 
+        title="Call API"
+        onPress={
+          () => {
+            navigation.navigate('Library')
+            getLibrary()
+          }
+        } 
+      />
+    </View>
+    );
+  }
+
+  function LibraryScreen({ navigation }) {
+    return (
+      <View style={{ flex: 1, padding: 24 }}>
+      <Header title="Book List" />
+      <Button 
+        title="Go To Book"
+        onPress={
+          () => {
+            navigation.navigate('Book')
+          }
+        } 
+      />
+      {isLibraryLoading ? <ActivityIndicator/> : (
+        <FlatList
+          data={libraryData}
+          renderItem={renderLibrary}
+          keyExtractor={(item) => item.id}
+          extraData={selectedId}
+        />
+      )}
+    </View>
+    );
+  }
+
+  function BookScreen({ navigation }) {
+    var titleText = selectedTitle;
+    var bodyText = selectedId;
+
+    return (
+      <View>
+        <Button 
+        title="Load Book"
+        onPress={() => getBook()} 
+        />
+        <Text style={styles.baseText}>
+          <Text style={styles.titleText}>
+            {titleText}
+            {"\n"}
+            {"\n"}
+          </Text>
+          <Text numberOfLines={5}>{bodyText}</Text>
+        </Text>
+      </View>
+    )
+  }
+
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -58,31 +133,22 @@ export default App = () => {
     title: {
       fontSize: 15,
     },
+    baseText: {
+      fontFamily: "Cochin"
+    },
+    titleText: {
+      fontSize: 20,
+      fontWeight: "bold"
+    }
   });
 
-  function HomeScreen() {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyCOntent: 'center'}}>
-        <Text>Home Screen</Text>
-      </View>
-    );
-  }
-
-  const Stack = createNativeStackNavigator();
-
   return (
-    <View style={{ flex: 1, padding: 24 }}>
-      <Header title="Text List" />
-      {isLoading ? <ActivityIndicator/> : (
-        <FlatList
-          data={data}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-          extraData={selectedId}
-        />
-      )}
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Library" component={LibraryScreen} />
+        <Stack.Screen name="Book" component={BookScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
-
-
