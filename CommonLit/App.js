@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
 	ActivityIndicator, 
 	Button, 
@@ -49,6 +49,7 @@ import { WebView } from 'react-native-webview';
    }
  }
 
+ 
   const Item = ({ item, onPress, backgroundColor, textColor }) => (
     <TouchableOpacity onPress={onPress} style = {[styles.item, backgroundColor]}>
       <Text style={[styles.title, textColor]}>{item.name}</Text>
@@ -139,6 +140,10 @@ import { WebView } from 'react-native-webview';
       </View>
     )
   }
+
+  useEffect(() => {
+    getLibrary();
+  }, []);
 
   const styles = StyleSheet.create({
     container: {
