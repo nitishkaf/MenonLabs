@@ -1,4 +1,5 @@
 # Menon Labs: CommonLit Mobile Application
+https://github.com/nguyensp/MenonAccess/raw/main/Menon_Progress.gif
 
   Run instructions for Android:
     • Have an Android emulator running (quickest way to get started), or a device connected.
